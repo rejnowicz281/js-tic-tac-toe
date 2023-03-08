@@ -10,7 +10,36 @@
 </head>
 
 <body>
-
+    <div class="container">
+        <div class="top-menu">
+            <h1 class="game-heading">Tic Tac Toe</h1>
+            <div class="new-game-buttons">
+                <button class="new-game-button" id="new-game-bot">New Game (Bot)</button>
+                <button class="new-game-button" id="new-game-friend">New Game (Friend)</button>
+            </div>
+        </div>
+        <div class="game">
+            <div id="playerX-container" class="player-container">
+                <div class="player-name">Player X</div>
+                <div>Points: <span id="playerX-points">0</span></div>
+            </div>
+            <div class="game-board">
+                <div class="square" data-row="0" data-column="0"></div>
+                <div class="square" data-row="0" data-column="1"></div>
+                <div class="square" data-row="0" data-column="2"></div>
+                <div class="square" data-row="1" data-column="0"></div>
+                <div class="square" data-row="1" data-column="1"></div>
+                <div class="square" data-row="1" data-column="2"></div>
+                <div class="square" data-row="2" data-column="0"></div>
+                <div class="square" data-row="2" data-column="1"></div>
+                <div class="square" data-row="2" data-column="2"></div>
+            </div>
+            <div id="playerO-container" class="player-container">
+                <div class="player-name">Player O</div>
+                <div>Points: <span id="playerO-points">0</span></div>
+            </div>
+        </div>
+    </div>
     <script src="script.js"></script>
 </body>
 

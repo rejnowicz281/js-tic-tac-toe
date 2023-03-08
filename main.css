@@ -1,0 +1,160 @@
+@font-face {
+  font-family: Shantell;
+  src: url("shantel.ttf");
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.top-menu {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-heading {
+  font-size: 100px;
+  animation: 3s gameHeadingSlideIn 1 normal;
+}
+
+@keyframes gameHeadingSlideIn {
+  from {
+    transform: translateX(6000px);
+  }
+  to {
+    transform: translateX(0px);
+  }
+}
+
+.new-game-button {
+  padding: 20px;
+  margin: 10px;
+  font-size: 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: whitesmoke;
+  background-color: rgb(63, 61, 61);
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  transition: 0.3s;
+}
+
+.new-game-button:hover {
+  scale: 1.1;
+  color: bisque;
+}
+
+#new-game-bot {
+  animation: 2s buttonOneSlideIn 1 normal;
+}
+
+#new-game-friend {
+  animation: 2s buttonTwoSlideIn 1 normal;
+}
+
+@keyframes buttonOneSlideIn {
+  from {
+    transform: translateY(-2000px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes buttonTwoSlideIn {
+  from {
+    transform: translateY(-4000px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+
+.game {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  font-size: 70px;
+  font-family: Shantell;
+}
+
+.player-container {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+#playerX-container {
+  animation: 2s playerXSlideIn 1 normal;
+}
+
+#playerO-container {
+  animation: 2s playerOSlideIn 1 normal;
+}
+
+@keyframes playerXSlideIn {
+  from {
+    transform: translateX(-4000px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes playerOSlideIn {
+  from {
+    transform: translateX(4000px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+
+.player-container p {
+  margin: 0;
+}
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 500px;
+  height: 500px;
+  background-color: rgb(255, 255, 255);
+  margin: 30px;
+  animation: 2s gameBoardSlideIn 1 normal;
+  font-size: 100px;
+}
+
+@keyframes gameBoardSlideIn {
+  from {
+    transform: translateY(4000px);
+  }
+  to {
+    transform: translateY(0px);
+  }
+}
+
+.square {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  color: grey;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
