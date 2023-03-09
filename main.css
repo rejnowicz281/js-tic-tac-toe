@@ -28,6 +28,7 @@ body {
 }
 
 .game-heading {
+  margin: 0;
   font-size: 100px;
   animation: 3s gameHeadingSlideIn 1 normal;
 }
@@ -98,6 +99,11 @@ body {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   border-radius: 20px;
   text-align: center;
+  padding: 10px;
+}
+
+.green {
+  background-color: green;
 }
 
 #playerX-container {
@@ -140,6 +146,8 @@ body {
   margin: 30px;
   animation: 2s gameBoardSlideIn 1 normal;
   font-size: 100px;
+  gap: 10px;
+  user-select: none;
 }
 
 @keyframes gameBoardSlideIn {
@@ -157,4 +165,10 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: 0.1s;
+  cursor: pointer;
+}
+
+.square:hover {
+  scale: 1.05;
 }
