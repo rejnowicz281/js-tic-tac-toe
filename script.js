@@ -3,21 +3,32 @@ const Player = (sign) => {
 };
 
 const Board = () => {
-  const table = [
+  let table = [
     [" ", " ", " "],
     [" ", " ", " "],
     [" ", " ", " "],
   ];
-  const mark = (row, column, sign) => {
-    table[row][column] = sign;
-  };
 
-  return { table, mark };
+  function mark(row, column, sign) {
+    this.table[row][column] = sign;
+  }
+
+  function clearTable() {
+    this.table = [
+      [" ", " ", " "],
+      [" ", " ", " "],
+      [" ", " ", " "],
+    ];
+  }
+
+  return { table, clearTable, mark };
 };
 
-const game = (() => {
+const Game = () => {
   const player1 = Player("X");
   const player2 = Player("O");
+  let winHistory = [];
+  let currentPlayer = Math.floor(Math.random() * 2) == 0 ? player1 : player2;
 
   let board = Board();
 
@@ -59,58 +70,137 @@ const game = (() => {
     return true;
   };
 
-  const clearSquares = () => {
-    const squares = document.querySelectorAll(".square");
+  function playTurn(row, column) {
+    if (board.table[row][column] == " ") {
+      board.mark(row, column, this.currentPlayer.sign);
+    } else {
+      return console.log("cant do that.");
+    }
 
+    if (winCheck(this.currentPlayer)) {
+      board.clearTable();
+      this.currentPlayer.points++;
+      this.winHistory.push(this.currentPlayer);
+      console.log(`${this.currentPlayer.sign} wins`);
+    } else if (tieCheck()) {
+      this.winHistory.push(null);
+      board.clearTable();
+      console.log("tis a tie...");
+    }
+
+    for (let i = 0; i < board.table.length; i++) {
+      console.log(board.table[i]);
+    }
+    this.currentPlayer = this.currentPlayer == player1 ? player2 : player1;
+  }
+
+  return {
+    player1,
+    player2,
+    winCheck,
+    tieCheck,
+    winHistory,
+    currentPlayer,
+    board,
+    playTurn,
+  };
+};
+
+const screenController = (game) => {
+  let winHistoryTemp = []; // store previous winners (storing it here aswell as in the game function so that a new winner can be detected)
+
+  const updateSquares = () => {
+    const squares = document.querySelectorAll(".square");
     for (let i = 0; i < squares.length; i++) {
-      squares[i].textContent = "";
+      let row = squares[i].dataset.row;
+      let column = squares[i].dataset.column;
+      squares[i].textContent = game.board.table[row][column];
     }
   };
 
-  const playTurn = (player) => {
-    const playerContainer = document.getElementById(
-      `player${player.sign}-container`
+  const updatePlayerContainers = () => {
+    let otherPlayer =
+      game.currentPlayer == game.player1 ? game.player2 : game.player1;
+    let otherPlayerContainer = document.getElementById(
+      `player${otherPlayer.sign}-container`
     );
-    playerContainer.classList.add("green");
-    const squares = document.querySelectorAll(".square");
+    if (otherPlayerContainer.classList.contains("green"))
+      otherPlayerContainer.classList.remove("green");
 
-    for (let j = 0; j < squares.length; j++) {
-      squares[j].onclick = function () {
-        if (squares[j].textContent == "") {
-          squares[j].textContent = player.sign;
-          board.mark(
-            squares[j].dataset.row,
-            squares[j].dataset.column,
-            player.sign
-          );
-          if (winCheck(player)) {
-            clearSquares();
-            board = Board();
-            player.points++;
-            document.getElementById(`player${player.sign}-points`)
-              .textContent++;
-          } else if (tieCheck()) {
-            clearSquares();
-            board = Board();
-          } else {
-            playerContainer.classList.remove("green");
-            playTurn(player == player1 ? player2 : player1);
-          }
-        }
-      };
+    let otherPlayerPoints = document.getElementById(
+      `player${otherPlayer.sign}-points`
+    );
+    otherPlayerPoints.textContent = otherPlayer.points;
+
+    let currentPlayerContainer = document.getElementById(
+      `player${game.currentPlayer.sign}-container`
+    );
+    let currentPlayerPoints = document.getElementById(
+      `player${game.currentPlayer.sign}-points`
+    );
+    currentPlayerPoints.textContent = game.currentPlayer.points;
+
+    currentPlayerContainer.classList.add("green");
+  };
+
+  const updateHeading = (message) => {
+    const gameHeading = document.querySelector(".game-heading");
+    if (!gameHeading.classList.contains("pulse")) {
+      gameHeading.classList.add("pulse");
+      gameHeading.textContent = message;
+
+      setTimeout(() => {
+        gameHeading.textContent = "Tic Tac Toe";
+        gameHeading.classList.remove("pulse");
+      }, 2000);
     }
   };
 
-  const play = () => {
-    let startingPlayer = Math.floor(Math.random() * 2) == 0 ? player1 : player2;
-    playTurn(startingPlayer);
+  const updateRoundMessage = () => {
+    // if there is a new winner
+    if (game.winHistory.length != winHistoryTemp.length) {
+      const previousWinner = game.winHistory[game.winHistory.length - 1];
+      winHistoryTemp.push(previousWinner);
+      if (previousWinner == null) {
+        updateHeading("It's a Tie!");
+      } else {
+        updateHeading(`Player ${previousWinner.sign} wins!`);
+      }
+    }
   };
 
-  return { player1, player2, board, play };
-})();
+  const updateScreen = () => {
+    updatePlayerContainers();
+
+    updateRoundMessage();
+
+    updateSquares();
+  };
+
+  const board = document.querySelector(".game-board");
+
+  board.onclick = function (e) {
+    row = e.target.dataset.row;
+    column = e.target.dataset.column;
+    if (!row || !column) return;
+    game.playTurn(row, column);
+    updateScreen();
+  };
+
+  updateHeading("New Game Initiated");
+  updateScreen(); // innitial update
+};
+
+let game;
 
 (function () {
   const newGameFriend = document.getElementById("new-game-friend");
-
-  newGameFriend.addEventListener("click", game.play);
+  newGameFriend.onclick = function () {
+    newGameFriend.classList.add("new-game-active");
+    document
+      .querySelector(".game-heading")
+      .classList.remove("game-heading-slide-in");
+    game = Game();
+    screenController(game);
+  };
 })();
