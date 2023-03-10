@@ -30,12 +30,31 @@ body {
 .game-heading {
   margin: 0;
   font-size: 100px;
-  animation: 3s gameHeadingSlideIn 1 normal;
+}
+
+.game-heading-slide-in {
+  animation: 1s gameHeadingSlideIn 1 normal;
+}
+
+.pulse {
+  animation: 1.5s pulse 1 normal;
+}
+
+@keyframes pulse {
+  0%,
+  50%,
+  100% {
+    scale: 1;
+  }
+  25%,
+  75% {
+    scale: 1.2;
+  }
 }
 
 @keyframes gameHeadingSlideIn {
   from {
-    transform: translateX(6000px);
+    transform: translateY(-1000px);
   }
   to {
     transform: translateX(0px);
@@ -56,9 +75,17 @@ body {
   transition: 0.3s;
 }
 
-.new-game-button:hover {
+.new-game-active {
+  color: rgb(255, 222, 183);
+}
+
+.new-game-button:hover,
+.new-game-active {
   scale: 1.1;
-  color: bisque;
+}
+
+.new-game-button:hover {
+  color: red;
 }
 
 #new-game-bot {
@@ -71,7 +98,7 @@ body {
 
 @keyframes buttonOneSlideIn {
   from {
-    transform: translateY(-2000px);
+    transform: translateX(-2000px);
   }
   to {
     transform: translateY(0px);
@@ -80,7 +107,7 @@ body {
 
 @keyframes buttonTwoSlideIn {
   from {
-    transform: translateY(-4000px);
+    transform: translateX(2000px);
   }
   to {
     transform: translateY(0px);
