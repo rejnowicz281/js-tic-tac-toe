@@ -1,5 +1,5 @@
 const Player = (sign) => {
-  return { sign, points: 0 };
+  return { sign, points: 0, bot: false };
 };
 
 const Board = () => {
@@ -9,89 +9,159 @@ const Board = () => {
     [" ", " ", " "],
   ];
 
-  function mark(row, column, sign) {
-    this.table[row][column] = sign;
-  }
+  const mark = (row, column, sign) => {
+    table[row][column] = sign;
+  };
 
-  function clearTable() {
-    this.table = [
+  const clearTable = () => {
+    table = [
       [" ", " ", " "],
       [" ", " ", " "],
       [" ", " ", " "],
     ];
-  }
+  };
 
-  return { table, clearTable, mark };
+  const printTable = () => {
+    console.log();
+    for (let i = 0; i < table.length; i++) {
+      console.log(table[i]);
+    }
+    console.log();
+  };
+
+  return {
+    getTable: () => table,
+    getSquare: (row, column) => table[row][column],
+    mark,
+    clearTable,
+    printTable,
+  };
 };
 
-const Game = () => {
+const Game = (bot = false) => {
   const player1 = Player("X");
   const player2 = Player("O");
   let winHistory = [];
   let currentPlayer = Math.floor(Math.random() * 2) == 0 ? player1 : player2;
-
   let board = Board();
+  const winningPatterns = [
+    [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+    ],
+    [
+      [1, 0],
+      [1, 1],
+      [1, 2],
+    ],
+    [
+      [2, 0],
+      [2, 1],
+      [2, 2],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [2, 0],
+    ],
+    [
+      [0, 1],
+      [1, 1],
+      [2, 1],
+    ],
+    [
+      [0, 2],
+      [1, 2],
+      [2, 2],
+    ],
+    [
+      [0, 0],
+      [1, 1],
+      [2, 2],
+    ],
+    [
+      [2, 0],
+      [1, 1],
+      [0, 2],
+    ],
+  ];
 
   const winCheck = (player) => {
-    return (
-      (board.table[0][0] == player.sign &&
-        board.table[0][1] == player.sign &&
-        board.table[0][2] == player.sign) ||
-      (board.table[1][0] == player.sign &&
-        board.table[1][1] == player.sign &&
-        board.table[1][2] == player.sign) ||
-      (board.table[2][0] == player.sign &&
-        board.table[2][1] == player.sign &&
-        board.table[2][2] == player.sign) ||
-      (board.table[0][0] == player.sign &&
-        board.table[1][0] == player.sign &&
-        board.table[2][0] == player.sign) ||
-      (board.table[0][1] == player.sign &&
-        board.table[1][1] == player.sign &&
-        board.table[2][1] == player.sign) ||
-      (board.table[0][2] == player.sign &&
-        board.table[1][2] == player.sign &&
-        board.table[2][2] == player.sign) ||
-      (board.table[0][0] == player.sign &&
-        board.table[1][1] == player.sign &&
-        board.table[2][2] == player.sign) ||
-      (board.table[2][0] == player.sign &&
-        board.table[1][1] == player.sign &&
-        board.table[0][2] == player.sign)
-    );
+    let win = (pattern) => pattern.every((square) => square === player.sign);
+
+    for (let i = 0; i < winningPatterns.length; i++) {
+      let pattern = [];
+      for (let j = 0; j < winningPatterns[i].length; j++) {
+        let row = winningPatterns[i][j][0];
+        let column = winningPatterns[i][j][1];
+        pattern.push(board.getSquare(row, column));
+      }
+
+      // if every square in a winning pattern equals the player's sign, then he wins
+      if (win(pattern)) return true;
+    }
+    return false;
   };
 
   const tieCheck = () => {
-    for (let i = 0; i < board.table.length; i++) {
-      for (let j = 0; j < board.table[i].length; j++) {
-        if (board.table[i][j] == " ") return false;
+    for (let i = 0; i < board.getTable().length; i++) {
+      for (let j = 0; j < board.getTable()[i].length; j++) {
+        if (board.getSquare(i, j) == " ") return false; // if board isn't full, return false
       }
     }
     return true;
   };
 
-  function playTurn(row, column) {
-    if (board.table[row][column] == " ") {
-      board.mark(row, column, this.currentPlayer.sign);
+  const playTurn = (row, column) => {
+    if (board.getSquare(row, column) == " ") {
+      board.mark(row, column, currentPlayer.sign);
     } else {
       return console.log("cant do that.");
     }
 
-    if (winCheck(this.currentPlayer)) {
+    if (winCheck(currentPlayer)) {
       board.clearTable();
-      this.currentPlayer.points++;
-      this.winHistory.push(this.currentPlayer);
-      console.log(`${this.currentPlayer.sign} wins`);
+      currentPlayer.points++;
+      winHistory.push(currentPlayer);
+      console.log(`${currentPlayer.sign} wins`);
     } else if (tieCheck()) {
-      this.winHistory.push(null);
+      winHistory.push(null);
       board.clearTable();
       console.log("tis a tie...");
     }
 
-    for (let i = 0; i < board.table.length; i++) {
-      console.log(board.table[i]);
+    board.printTable();
+
+    currentPlayer = currentPlayer == player1 ? player2 : player1;
+
+    if (currentPlayer.bot) botMove();
+  };
+
+  const botMove = () => {
+    let legalMoves = [];
+
+    for (let i = 0; i < board.getTable().length; i++) {
+      for (let j = 0; j < board.getTable()[i].length; j++) {
+        if (board.getSquare(i, j) == " ") {
+          legalMoves.push([i, j]);
+        }
+      }
     }
-    this.currentPlayer = this.currentPlayer == player1 ? player2 : player1;
+
+    let randomMove = legalMoves[Math.floor(Math.random() * legalMoves.length)];
+    console.log(`I, the computer, am choosing coordinates (${randomMove}).`);
+    playTurn(randomMove[0], randomMove[1]);
+  };
+
+  if (bot) {
+    Math.floor(Math.random() * 2) == 0
+      ? (player1.bot = true)
+      : (player2.bot = true); // make random player bot
+
+    if (currentPlayer.bot) {
+      botMove(); // let bot start
+    }
   }
 
   return {
@@ -99,9 +169,9 @@ const Game = () => {
     player2,
     winCheck,
     tieCheck,
-    winHistory,
-    currentPlayer,
-    board,
+    getWinHistory: () => winHistory,
+    getCurrentPlayer: () => currentPlayer,
+    getBoard: () => board,
     playTurn,
   };
 };
@@ -114,13 +184,13 @@ const screenController = (game) => {
     for (let i = 0; i < squares.length; i++) {
       let row = squares[i].dataset.row;
       let column = squares[i].dataset.column;
-      squares[i].textContent = game.board.table[row][column];
+      squares[i].textContent = game.getBoard().getSquare(row, column);
     }
   };
 
   const updatePlayerContainers = () => {
     let otherPlayer =
-      game.currentPlayer == game.player1 ? game.player2 : game.player1;
+      game.getCurrentPlayer() == game.player1 ? game.player2 : game.player1;
     let otherPlayerContainer = document.getElementById(
       `player${otherPlayer.sign}-container`
     );
@@ -133,12 +203,12 @@ const screenController = (game) => {
     otherPlayerPoints.textContent = otherPlayer.points;
 
     let currentPlayerContainer = document.getElementById(
-      `player${game.currentPlayer.sign}-container`
+      `player${game.getCurrentPlayer().sign}-container`
     );
     let currentPlayerPoints = document.getElementById(
-      `player${game.currentPlayer.sign}-points`
+      `player${game.getCurrentPlayer().sign}-points`
     );
-    currentPlayerPoints.textContent = game.currentPlayer.points;
+    currentPlayerPoints.textContent = game.getCurrentPlayer().points;
 
     currentPlayerContainer.classList.add("green");
   };
@@ -158,8 +228,9 @@ const screenController = (game) => {
 
   const updateRoundMessage = () => {
     // if there is a new winner
-    if (game.winHistory.length != winHistoryTemp.length) {
-      const previousWinner = game.winHistory[game.winHistory.length - 1];
+    if (game.getWinHistory().length != winHistoryTemp.length) {
+      const previousWinner =
+        game.getWinHistory()[game.getWinHistory().length - 1];
       winHistoryTemp.push(previousWinner);
       if (previousWinner == null) {
         updateHeading("It's a Tie!");
@@ -187,6 +258,10 @@ const screenController = (game) => {
     updateScreen();
   };
 
+  document
+    .querySelector(".game-heading")
+    .classList.remove("game-heading-slide-in"); // prevent game heading sliding in after getting it's 'pulse' class removed
+
   updateHeading("New Game Initiated");
   updateScreen(); // innitial update
 };
@@ -194,13 +269,22 @@ const screenController = (game) => {
 let game;
 
 (function () {
+  const newGameBot = document.getElementById("new-game-bot");
   const newGameFriend = document.getElementById("new-game-friend");
   newGameFriend.onclick = function () {
+    if (newGameBot.classList.contains("new-game-active"))
+      newGameBot.classList.remove("new-game-active");
+
     newGameFriend.classList.add("new-game-active");
-    document
-      .querySelector(".game-heading")
-      .classList.remove("game-heading-slide-in");
     game = Game();
+    screenController(game);
+  };
+  newGameBot.onclick = function () {
+    if (newGameFriend.classList.contains("new-game-active"))
+      newGameFriend.classList.remove("new-game-active");
+
+    newGameBot.classList.add("new-game-active");
+    game = Game(true);
     screenController(game);
   };
 })();
