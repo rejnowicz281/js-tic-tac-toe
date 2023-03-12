@@ -87,7 +87,7 @@ const Game = (bot = false) => {
     ],
   ];
 
-  const winCheck = (player) => {
+  const winCheck = (player, currentBoard = board) => {
     let win = (pattern) => pattern.every((square) => square === player.sign);
 
     for (let i = 0; i < winningPatterns.length; i++) {
@@ -95,7 +95,7 @@ const Game = (bot = false) => {
       for (let j = 0; j < winningPatterns[i].length; j++) {
         let row = winningPatterns[i][j][0];
         let column = winningPatterns[i][j][1];
-        pattern.push(board.getSquare(row, column));
+        pattern.push(currentBoard.getSquare(row, column));
       }
 
       // if every square in a winning pattern equals the player's sign, then he wins
@@ -104,10 +104,10 @@ const Game = (bot = false) => {
     return false;
   };
 
-  const tieCheck = () => {
-    for (let i = 0; i < board.getTable().length; i++) {
-      for (let j = 0; j < board.getTable()[i].length; j++) {
-        if (board.getSquare(i, j) == " ") return false; // if board isn't full, return false
+  const tieCheck = (currentBoard = board) => {
+    for (let i = 0; i < currentBoard.getTable().length; i++) {
+      for (let j = 0; j < currentBoard.getTable()[i].length; j++) {
+        if (currentBoard.getSquare(i, j) == " ") return false; // if board isn't full, return false
       }
     }
     return true;
@@ -136,6 +136,16 @@ const Game = (bot = false) => {
     currentPlayer = currentPlayer == player1 ? player2 : player1;
 
     if (currentPlayer.bot) botMove();
+  };
+
+  const copyBoard = (board) => {
+    let boardCopy = Board();
+    for (let i = 0; i < board.getTable().length; i++) {
+      for (let j = 0; j < board.getTable()[i].length; j++) {
+        boardCopy.mark(i, j, board.getSquare(i, j));
+      }
+    }
+    return boardCopy;
   };
 
   const botMove = () => {
