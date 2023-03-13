@@ -120,6 +120,8 @@ const Game = (bot = false) => {
       return console.log("cant do that.");
     }
 
+    board.printTable();
+
     if (winCheck(currentPlayer)) {
       board.clearTable();
       currentPlayer.points++;
@@ -131,37 +133,92 @@ const Game = (bot = false) => {
       console.log("tis a tie...");
     }
 
-    board.printTable();
-
     currentPlayer = currentPlayer == player1 ? player2 : player1;
 
-    if (currentPlayer.bot) botMove();
+    if (currentPlayer.bot) playBestMove();
   };
 
-  const copyBoard = (board) => {
+  const copyBoard = (boardToCopy) => {
     let boardCopy = Board();
     for (let i = 0; i < board.getTable().length; i++) {
       for (let j = 0; j < board.getTable()[i].length; j++) {
-        boardCopy.mark(i, j, board.getSquare(i, j));
+        boardCopy.mark(i, j, boardToCopy.getSquare(i, j));
       }
     }
     return boardCopy;
   };
 
-  const botMove = () => {
-    let legalMoves = [];
+  const minimax = (currentBoard, isMaximizing) => {
+    if (winCheck(currentPlayer, currentBoard)) {
+      return 1;
+    } else if (
+      winCheck(currentPlayer == player1 ? player2 : player1, currentBoard)
+    ) {
+      return -1;
+    } else if (tieCheck(currentBoard)) {
+      return 0;
+    }
+
+    let copiedBoard;
+    let score;
+
+    if (isMaximizing) {
+      let max_score = -Infinity;
+      for (let i = 0; i < board.getTable().length; i++) {
+        for (let j = 0; j < board.getTable()[i].length; j++) {
+          if (currentBoard.getSquare(i, j) == " ") {
+            copiedBoard = copyBoard(currentBoard);
+            copiedBoard.mark(i, j, currentPlayer.sign);
+            score = minimax(copiedBoard, false);
+            max_score = Math.max(max_score, score);
+          }
+        }
+      }
+      return max_score;
+    } else {
+      let min_score = Infinity;
+      for (let i = 0; i < board.getTable().length; i++) {
+        for (let j = 0; j < board.getTable()[i].length; j++) {
+          if (currentBoard.getSquare(i, j) == " ") {
+            copiedBoard = copyBoard(currentBoard);
+            copiedBoard.mark(
+              i,
+              j,
+              currentPlayer == player1 ? player2.sign : player1.sign
+            );
+            score = minimax(copiedBoard, true);
+            min_score = Math.min(min_score, score);
+          }
+        }
+      }
+      return min_score;
+    }
+  };
+
+  const playBestMove = () => {
+    let row;
+    let column;
+
+    let copiedBoard;
+    let max_score = -Infinity;
+    let score;
 
     for (let i = 0; i < board.getTable().length; i++) {
       for (let j = 0; j < board.getTable()[i].length; j++) {
         if (board.getSquare(i, j) == " ") {
-          legalMoves.push([i, j]);
+          copiedBoard = copyBoard(board);
+          copiedBoard.mark(i, j, currentPlayer.sign);
+
+          score = minimax(copiedBoard, false);
+          if (score > max_score) {
+            row = i;
+            column = j;
+            max_score = score;
+          }
         }
       }
     }
-
-    let randomMove = legalMoves[Math.floor(Math.random() * legalMoves.length)];
-    console.log(`I, the computer, am choosing coordinates (${randomMove}).`);
-    playTurn(randomMove[0], randomMove[1]);
+    playTurn(row, column, currentPlayer.sign);
   };
 
   if (bot) {
@@ -169,9 +226,7 @@ const Game = (bot = false) => {
       ? (player1.bot = true)
       : (player2.bot = true); // make random player bot
 
-    if (currentPlayer.bot) {
-      botMove(); // let bot start
-    }
+    if (currentPlayer.bot) playBestMove(); // let bot start
   }
 
   return {
@@ -183,6 +238,7 @@ const Game = (bot = false) => {
     getCurrentPlayer: () => currentPlayer,
     getBoard: () => board,
     playTurn,
+    playBestMove,
   };
 };
 
