@@ -1,14 +1,14 @@
 @font-face {
-  font-family: Shantell;
-  src: url("shantel.ttf");
+  font-family: DogicaPixelBold;
+  src: url("dogicapixelbold.ttf");
 }
 
 body {
   margin: 0;
   height: 100vh;
   width: 100vw;
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  font-family: DogicaPixelBold;
+  text-transform: uppercase;
 }
 
 .container {
@@ -48,7 +48,7 @@ body {
   }
   25%,
   75% {
-    scale: 1.2;
+    scale: 1.05;
   }
 }
 
@@ -62,9 +62,10 @@ body {
 }
 
 .new-game-button {
-  padding: 20px;
-  margin: 10px;
-  font-size: 15px;
+  font-family: DogicaPixelBold;
+  text-transform: uppercase;
+  padding: 30px;
+  margin: 30px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -119,7 +120,6 @@ body {
   align-items: center;
   gap: 50px;
   font-size: 70px;
-  font-family: Shantell;
 }
 
 .player-container {
@@ -159,8 +159,8 @@ body {
   }
 }
 
-.player-container p {
-  margin: 0;
+.player-container div {
+  margin: 15px;
 }
 
 .game-board {
