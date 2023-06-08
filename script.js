@@ -260,8 +260,8 @@ const screenController = (game) => {
     let otherPlayerContainer = document.getElementById(
       `player${otherPlayer.sign}-container`
     );
-    if (otherPlayerContainer.classList.contains("green"))
-      otherPlayerContainer.classList.remove("green");
+    if (otherPlayerContainer.classList.contains("current"))
+      otherPlayerContainer.classList.remove("current");
 
     let otherPlayerPoints = document.getElementById(
       `player${otherPlayer.sign}-points`
@@ -276,7 +276,7 @@ const screenController = (game) => {
     );
     currentPlayerPoints.textContent = game.getCurrentPlayer().points;
 
-    currentPlayerContainer.classList.add("green");
+    currentPlayerContainer.classList.add("current");
   };
 
   const updateHeading = (message) => {
